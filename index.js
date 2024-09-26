@@ -2,6 +2,8 @@ import { ethers } from 'ethers';
 import { Record, Profile } from '@resolverworks/enson';
 import { mock_list } from './mock_data';
 
+const graphUrl = `https://gateway.thegraph.com/api/1e800956ee244eeda0ad15fbad7a8c67/subgraphs/id/HxdDjjtznb8VFwqxAsHrfKUgjAUdziisERQdC1UcCr5U`
+
 const rpcs = [
     // 'https://eth-mainnet.g.alchemy.com/v2/9T5n0ljpi0uGhLhyGnQNQ0ZJ8aU9awlQ'
     'https://eth-mainnet.rpc.grove.city/v1/298e23fd'
@@ -67,11 +69,24 @@ function list(prefix) {
     throw new Error('Production list data not yet configured');
 }
 
+// Allows the user to perform raw custom graphQL queries
+async function graphQuery(query) {
+    const response = await fetch(graphUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query }),
+    });
+    const data = await response.json();
+    return data;
+}
 
 const tkn = {
     lookup,
     list,
     setMockupMode,
+    graphQuery, // Add graphData to the exported object
     // other utilities
 };
 

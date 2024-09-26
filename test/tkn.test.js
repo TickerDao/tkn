@@ -27,3 +27,37 @@ describe('tkn.list', () => {
   });
 });
 
+describe('tkn.graphQuery', () => {
+  it('should fetch data from the GraphQL endpoint', async () => {
+    const query = `
+      {
+        tokens(first: 5) {
+          id
+          name
+          symbol
+          decimals
+        }
+      }
+    `;
+
+    const result = await tkn.graphQuery(query);
+
+    expect(result).toBeDefined();
+    expect(result.data).toBeDefined();
+    expect(result.data.tokens).toBeDefined();
+    
+    // Check if tokens is an array and has elements
+    expect(Array.isArray(result.data.tokens)).toBe(true);
+    expect(result.data.tokens.length).toBeGreaterThan(0);
+
+    // Check the structure of the first token
+    const firstToken = result.data.tokens[0];
+    expect(firstToken).toHaveProperty('id');
+    expect(firstToken).toHaveProperty('name');
+    expect(firstToken).toHaveProperty('symbol');
+    expect(firstToken).toHaveProperty('decimals');
+
+    console.log(JSON.stringify(result, null, 2));
+  });
+});
+
