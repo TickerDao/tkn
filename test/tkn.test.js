@@ -59,5 +59,15 @@ describe('tkn.graphQuery', () => {
 
     console.log(JSON.stringify(result, null, 2));
   });
+
+
+  describe('tkn.getListById', () => {
+    it('should fetch list onchain with valid id', async () => {
+      const list = await tkn.getListById('aerodrome');
+      expect(list).toBeDefined();
+      expect(list.name).toEqual('Aerodrome');
+      console.log(list);
+    });
+  });
 });
 

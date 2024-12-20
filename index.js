@@ -4,9 +4,12 @@ import { mock_list } from './mock_data';
 
 const graphUrl = `https://gateway.thegraph.com/api/1e800956ee244eeda0ad15fbad7a8c67/subgraphs/id/HxdDjjtznb8VFwqxAsHrfKUgjAUdziisERQdC1UcCr5U`
 
+const dataChainUrl = `https://datachain.rpc.caldera.xyz/http`
+
 const rpcs = [
+    dataChainUrl,
     // 'https://eth-mainnet.g.alchemy.com/v2/9T5n0ljpi0uGhLhyGnQNQ0ZJ8aU9awlQ'
-    'https://eth-mainnet.rpc.grove.city/v1/298e23fd'
+    // 'https://eth-mainnet.rpc.grove.city/v1/298e23fd'
 ];
 
 let isMockMode = false;
@@ -15,8 +18,12 @@ const providers = rpcs.map(url => new ethers.JsonRpcProvider(url));
 
 const fallbackProvider = new ethers.FallbackProvider(providers);
 
-const resolver = new ethers.Contract('0xe121A6e3a50008EFE9C617214320c2f9fF903411', [
+const resolver = new ethers.Contract('0x861631e16009818D6a57f8FacF7d6ACda9033789', [
     'function resolve(bytes name, bytes call) external view returns (bytes memory)',
+], fallbackProvider);
+
+const getListInfoResulver = new ethers.Contract('0x861631e16009818D6a57f8FacF7d6ACda9033789', [
+    '	function getListInfo(uint256 listId) external view returns (string memory handle, string memory name, string memory hash, string memory description, bool isPrimaryListForToken, uint256[] memory tokenIds)',
 ], fallbackProvider);
 
 const iface = new ethers.Interface([
@@ -69,6 +76,11 @@ function list(prefix) {
     throw new Error('Production list data not yet configured');
 }
 
+function getListById(id) {
+
+    return mock_list[id];
+}
+
 // Allows the user to perform raw custom graphQL queries
 async function graphQuery(query) {
     const response = await fetch(graphUrl, {
@@ -87,6 +99,7 @@ const tkn = {
     list,
     setMockupMode,
     graphQuery, // Add graphData to the exported object
+    getListById,
     // other utilities
 };
 
