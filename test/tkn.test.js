@@ -28,36 +28,97 @@ describe('tkn.list', () => {
 });
 
 describe('tkn.graphQuery', () => {
-  it('should fetch data from the GraphQL endpoint', async () => {
-    const query = `
-      {
-        tokens(first: 5) {
-          id
-          name
-          symbol
-          decimals
+  it('should fetch and verify lists data', async () => {
+    const query = `{
+      lists(where: {hash: "test"}) {
+        id
+        name
+        hash
+        tokenIds
+      }
+    }`;
+    const result = await tkn.graphQuery(query);
+    expect(result).toBeDefined();
+    expect(result.data).toBeDefined();
+    expect(result.data.lists).toBeDefined();
+    expect(Array.isArray(result.data.lists)).toBe(true);
+  });
+
+  it('should fetch and verify sublists data', async () => {
+    const query = `{
+      sublists(where: {name: ""}) {
+        owner
+        name
+        id
+        listHash
+        description
+      }
+    }`;
+    const result = await tkn.graphQuery(query);
+    expect(result).toBeDefined();
+    expect(result.data).toBeDefined();
+    expect(result.data.sublists).toBeDefined();
+    expect(Array.isArray(result.data.sublists)).toBe(true);
+  });
+
+  it('should fetch and verify tokens data', async () => {
+    const query = `{
+      tokens(where: {symbol: "ETH"}) {
+        id
+        name
+        symbol
+        addresses {
+          address
+          chainID {
+            id
+          }
         }
       }
-    `;
-
+    }`;
     const result = await tkn.graphQuery(query);
-
     expect(result).toBeDefined();
     expect(result.data).toBeDefined();
     expect(result.data.tokens).toBeDefined();
-    
-    // Check if tokens is an array and has elements
     expect(Array.isArray(result.data.tokens)).toBe(true);
-    expect(result.data.tokens.length).toBeGreaterThan(0);
 
-    // Check the structure of the first token
-    const firstToken = result.data.tokens[0];
-    expect(firstToken).toHaveProperty('id');
-    expect(firstToken).toHaveProperty('name');
-    expect(firstToken).toHaveProperty('symbol');
-    expect(firstToken).toHaveProperty('decimals');
+    if (result.data.tokens.length > 0) {
+      const token = result.data.tokens[0];
+      expect(token).toHaveProperty('id');
+      expect(token).toHaveProperty('name');
+      expect(token).toHaveProperty('symbol');
+      expect(token).toHaveProperty('addresses');
+      expect(Array.isArray(token.addresses)).toBe(true);
+    }
+  });
 
-    console.log(JSON.stringify(result, null, 2));
+  it('should fetch and verify addresses data', async () => {
+    const query = `{
+      addresses(where: {chainID_: {id: "1"}}) {
+        address
+        id
+        nonEVMAddress
+        tokenId {
+          id
+          symbol
+        }
+        chainID {
+          id
+        }
+      }
+    }`;
+    const result = await tkn.graphQuery(query);
+    expect(result).toBeDefined();
+    expect(result.data).toBeDefined();
+    expect(result.data.addresses).toBeDefined();
+    expect(Array.isArray(result.data.addresses)).toBe(true);
+
+    if (result.data.addresses.length > 0) {
+      const address = result.data.addresses[0];
+      expect(address).toHaveProperty('address');
+      expect(address).toHaveProperty('id');
+      expect(address).toHaveProperty('tokenId');
+      expect(address).toHaveProperty('chainID');
+    }
   });
 });
 

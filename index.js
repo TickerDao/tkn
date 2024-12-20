@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { Record, Profile } from '@resolverworks/enson';
 import { mock_list } from './mock_data';
 
-const graphUrl = `https://gateway.thegraph.com/api/1e800956ee244eeda0ad15fbad7a8c67/subgraphs/id/HxdDjjtznb8VFwqxAsHrfKUgjAUdziisERQdC1UcCr5U`
+const graphUrl = `https://query.graph.tkn.xyz/subgraphs/name/tkn/l2-manager-v3`
 
 const rpcs = [
     // 'https://eth-mainnet.g.alchemy.com/v2/9T5n0ljpi0uGhLhyGnQNQ0ZJ8aU9awlQ'
