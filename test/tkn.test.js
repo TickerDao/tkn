@@ -136,3 +136,80 @@ describe('tkn.lookupByAddress', () => {
   });
 });
 
+describe('tkn.lookupBySymbolAndChain', () => {
+    it('should return token data for valid symbol and chain ID', async () => {
+        const result = await tkn.lookupBySymbolAndChain('USDC', '1');
+        
+        expect(result).toHaveProperty('data');
+        expect(result.data).toHaveProperty('tokens');
+        expect(Array.isArray(result.data.tokens)).toBe(true);
+        
+        if (result.data.tokens.length > 0) {
+            const token = result.data.tokens[0];
+            expect(token).toHaveProperty('symbol', 'USDC');
+            expect(token).toHaveProperty('addresses');
+            expect(Array.isArray(token.addresses)).toBe(true);
+            
+            const address = token.addresses[0];
+            expect(address).toHaveProperty('chainID');
+            expect(address.chainID).toHaveProperty('id', '1');
+        }
+    });
+
+    it('should return empty tokens array for non-existent symbol', async () => {
+        const result = await tkn.lookupBySymbolAndChain('NONEXISTENT123', '1');
+        
+        expect(result).toHaveProperty('data');
+        expect(result.data).toHaveProperty('tokens');
+        expect(Array.isArray(result.data.tokens)).toBe(true);
+        expect(result.data.tokens).toHaveLength(0);
+    });
+
+    it('should return empty tokens array for non-existent chain ID', async () => {
+        const result = await tkn.lookupBySymbolAndChain('USDC', '999999');
+        
+        expect(result).toHaveProperty('data');
+        expect(result.data).toHaveProperty('tokens');
+        expect(Array.isArray(result.data.tokens)).toBe(true);
+        expect(result.data.tokens).toHaveLength(0);
+    });
+
+    it('should handle invalid chain ID format', async () => {
+        const result = await tkn.lookupBySymbolAndChain('USDC', 'invalid-chain');
+        
+        expect(result).toHaveProperty('data');
+        expect(result.data).toHaveProperty('tokens');
+        expect(Array.isArray(result.data.tokens)).toBe(true);
+        expect(result.data.tokens).toHaveLength(0);
+    });
+
+    it('should return token data with all expected fields', async () => {
+        const result = await tkn.lookupBySymbolAndChain('USDC', '1');
+        
+        expect(result).toHaveProperty('data');
+        expect(result.data).toHaveProperty('tokens');
+        
+        if (result.data.tokens.length > 0) {
+            const token = result.data.tokens[0];
+            const expectedKeys = [
+                'id',
+                'name',
+                'description',
+                'symbol',
+                'avatar',
+                'dweb',
+                'discord',
+                'decimals',
+                'addresses'
+            ];
+            expectedKeys.forEach(key => {
+                expect(token).toHaveProperty(key);
+            });
+
+            const address = token.addresses[0];
+            expect(address).toHaveProperty('tokenAddress');
+            expect(address).toHaveProperty('chainID');
+        }
+    });
+});
+

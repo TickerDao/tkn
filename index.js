@@ -130,6 +130,29 @@ async function lookupByAddress(address) {
     return await graphQuery(query);
 }
 
+async function lookupBySymbolAndChain(symbol, chainId) {
+    const query = `{
+        tokens(where: { symbol: "${symbol}", addresses_: { chainID: "${chainId}" } }) {
+            id
+            name
+            description
+            symbol
+            avatar
+            dweb
+            discord
+            decimals
+            addresses(where: { chainID: "${chainId}" }) {
+                tokenAddress      
+                chainID {
+                    id
+                }
+            }
+        }
+    }`;
+
+    return await graphQuery(query);
+}
+
 const tkn = {
     lookup,
     list,
@@ -137,6 +160,7 @@ const tkn = {
     graphQuery,
     lookupBySymbol,
     lookupByAddress,
+    lookupBySymbolAndChain,
 };
 
 export { tkn };
