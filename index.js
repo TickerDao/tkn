@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { Record, Profile } from '@resolverworks/enson';
 import { mock_list } from './mock_data';
 
-const graphUrl = `https://gateway.thegraph.com/api/1e800956ee244eeda0ad15fbad7a8c67/subgraphs/id/HxdDjjtznb8VFwqxAsHrfKUgjAUdziisERQdC1UcCr5U`
+const graphUrl = `https://query.graph.tkn.xyz/subgraphs/name/tkn/v3`
 
 const rpcs = [
     // 'https://eth-mainnet.g.alchemy.com/v2/9T5n0ljpi0uGhLhyGnQNQ0ZJ8aU9awlQ'
@@ -82,12 +82,85 @@ async function graphQuery(query) {
     return data;
 }
 
+async function lookupBySymbol(symbol) {
+    const query = `{
+        tokens(where: { symbol: "${symbol}" }) {
+            id
+            name
+            description
+            symbol
+            avatar
+            dweb
+            discord
+            decimals
+            addresses {
+                tokenAddress      
+                chainID {
+                    id
+                }
+            }
+        }
+    }`;
+
+    return await graphQuery(query);
+}
+
+async function lookupByAddress(address) {
+    const query = `{
+        addresses(where: {tokenAddress: "${address}"}) {
+            addressID
+            chainID {
+                id
+            }
+            tokenAddress
+            nonEVMAddress
+            id
+            tokenID {
+                avatar
+                description
+                decimals
+                name
+                symbol
+                tokenSupply
+                twitter
+            }
+        }
+    }`;
+
+    return await graphQuery(query);
+}
+
+async function lookupBySymbolAndChain(symbol, chainId) {
+    const query = `{
+        tokens(where: { symbol: "${symbol}", addresses_: { chainID: "${chainId}" } }) {
+            id
+            name
+            description
+            symbol
+            avatar
+            dweb
+            discord
+            decimals
+            addresses(where: { chainID: "${chainId}" }) {
+                tokenAddress      
+                chainID {
+                    id
+                }
+            }
+        }
+    }`;
+
+    return await graphQuery(query);
+}
+
 const tkn = {
     lookup,
     list,
     setMockupMode,
-    graphQuery, // Add graphData to the exported object
-    // other utilities
+    graphQuery,
+    lookupBySymbol,
+    lookupByAddress,
+    lookupBySymbolAndChain,
 };
 
 export { tkn };
