@@ -1,21 +1,91 @@
-## The Token Name Service
+# The Token Name Service
 
 The easiest, most unruggable, and comprehensive token data service.
 
-**Getting started:**  
+## Installation
 
-Run `npm i tkn` from the command line   
-
-then:   
+```bash
+npm install tkn
 ```
+
+## Usage
+
+```javascript
 import { tkn } from 'tkn';
-const data = await tkn.fetch('eth');
+
+// Lookup token information
+const data = await tkn.lookup('eth');
 ```
 
----
-**Developing:**   
-`npm i`  
-`npm test`
+## API Reference
+
+### lookup(prefix)
+Looks up token information by prefix.
+```javascript
+const result = await tkn.lookup('eth');
+```
+
+### lookupBySymbol(symbol)
+Looks up token information by symbol.
+```javascript
+const result = await tkn.lookupBySymbol('WETH');
+```
+
+### lookupByAddress(address)
+Looks up token information by contract address.
+```javascript
+const result = await tkn.lookupByAddress('0x5979D7b546E38E414F7E9822514be443A4800529');
+```
+
+### lookupBySymbolAndChain(symbol, chainId)
+Looks up token information by symbol and chain ID.
+```javascript
+const result = await tkn.lookupBySymbolAndChain('USDC', '1'); // For Ethereum mainnet
+```
+
+## Response Types
+
+### Token Response
+```typescript
+{
+  id: string;
+  name: string;
+  description: string;
+  symbol: string;
+  avatar: string;
+  dweb: string;
+  discord: string | null;
+  decimals: string;
+  addresses: Array<{
+    tokenAddress: string;
+    chainID: {
+      id: string;
+    }
+  }>;
+}
+```
+
+### Address Response
+```typescript
+{
+  addressID: string | null;
+  chainID: {
+    id: string;
+  };
+  tokenAddress: string;
+  nonEVMAddress: string | null;
+  id: string;
+  tokenID: {
+    avatar: string;
+    description: string;
+    decimals: string;
+    name: string;
+    symbol: string;
+    tokenSupply: string | null;
+    twitter: string | null;
+  };
+}
+```
 
 ---
 **Publishing:**   
