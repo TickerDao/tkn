@@ -1,6 +1,6 @@
 {
   "name": "tkn",
-  "version": "2.0",
+  "version": "0.2.0",
   "description": "The Token Name Service NPM package",
   "type": "module",
   "main": "index.js",
